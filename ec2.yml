@@ -1,0 +1,30 @@
+---
+
+- name: Deploy a web server, set timezone and display server hostname in html file
+  hosts: all
+  become: true
+  remote_user: ec2-user
+  tasks:
+
+
+     - name: Install httpd
+       ansible.builtin.yum:
+          name: httpd
+          state: present
+       notify:
+          - Start httpd
+
+     - name: Set timezone to Africa/Lagos
+       community.general.timezone:
+          name: Africa/Lagos
+
+     - name: Display server hostname in html file
+       ansible.builtin.shell: echo "Hello World from $(hostname -f)" > /var/www/html/index.html
+       changed_when: false
+
+  handlers:
+     - name: Start httpd
+       ansible.builtin.service:
+          name: httpd
+          state: started
+          enabled: true
